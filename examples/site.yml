@@ -5,9 +5,11 @@
   hosts: nomad_instances
   become: yes
   become_user: root
-  roles:
-    - { role: brianshumate.nomad }
 
   tasks:
+    - name: nomad role
+      include_role:
+        name: ansible-community.nomad
+
     - name: Start nomad
       service: name=nomad state=started enabled=yes
