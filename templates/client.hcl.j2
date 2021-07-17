@@ -71,7 +71,7 @@ client {
 {{ plugin_config(value, count=next_count, width=width) }}
 {{ '}' | indent(count*width, first=True) }}
 {% else %}
-{{ key | indent(count*width, first=True) }} = {% if value is string %}"{{ value }}"{% else %}{{ value | string | lower }}{% endif %}
+{{ key | indent(count*width, first=True) }} = {% if value is string %}"{{ value }}"{% elif value is iterable and (value is not string and value is not mapping) -%}[{% set comma = joiner(",") %}{% for item in value %}{{ comma() }}"{{ item | string }}"{% endfor %}]{% else %}{{ value | string | lower }}{% endif %}
 
 {% endif %}
 {% endfor %}
