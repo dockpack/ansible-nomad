@@ -90,7 +90,7 @@ telemetry {
     use_node_name = "{{ nomad_telemetry_use_node_name | default(false) | bool | lower }}"
     publish_allocation_metrics = "{{ nomad_telemetry_publish_allocation_metrics | default(false) | bool | lower }}"
     publish_node_metrics = "{{ nomad_telemetry_publish_node_metrics | default(false) | bool | lower }}"
-{% if nomad_version | replace(".", "0000") | int < 10000000000 %}
+{% if nomad_version is version('1.0.0', '<') %}
     backwards_compatible_metrics = "{{ nomad_telemetry_backwards_compatible_metrics | default(false) | bool | lower }}"
     disable_tagged_metrics = "{{ nomad_telemetry_disable_tagged_metrics | default(false) | bool | lower }}"
 {% endif %}
