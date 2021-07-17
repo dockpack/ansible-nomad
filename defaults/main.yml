@@ -154,6 +154,10 @@ nomad_consul_token: ""
 nomad_consul_servers_service_name: "nomad-servers"
 nomad_consul_clients_service_name: "nomad-clients"
 nomad_consul_tags: {}
+nomad_consul_ssl: false
+nomad_consul_ca_file: ""
+nomad_consul_cert_file: ""
+nomad_consul_key_file: ""
 
 ### ACLs
 nomad_acl_enabled: "{{ lookup('env', 'NOMAD_ACL_ENABLED') | default('no', true) }}"

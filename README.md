@@ -464,6 +464,26 @@ in many Ansible versions, so this feature might not always work.
 - Token to use for consul interaction
 - Default value: **""**
 
+### `nomad_consul_ssl`
+
+- Communicate with Consul over TLS
+- Default value: **false**
+
+### `nomad_consul_ca_file`
+
+- CA certificate used for Consul communication
+- Default value: **""**
+
+### `nomad_consul_cert_file`
+
+- Certificate used for Consul communication. Must also specify `nomad_consul_key_file`.
+- Default value: **""**
+
+### `nomad_consul_key_file`
+
+- Private key used for Consul communication.
+- Default value: **""**
+
 ### `nomad_bootstrap_expect`
 
 - Specifies the number of server nodes to wait for before bootstrapping.
