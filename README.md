@@ -48,7 +48,7 @@ The role defines most of its variables in `defaults/main.yml`:
 ### `nomad_version`
 
 - Nomad version to install
-- Default value: **0.12.0**
+- Default value: **1.1.1**
 
 ### `nomad_architecture_map`
 
@@ -339,6 +339,22 @@ nomad_host_volumes:
     read_only: false
 ```
 
+### `nomad_host_networks`
+
+- List host_network is used to make different networks available to jobs instead of selecting a default interface. This is very useful especially in case of multiple nics.
+- Default value: **[]**
+- Example:
+
+```yaml
+nomad_host_networks:
+  - name: public
+    cidr: 100.101.102.103/24
+    reserved_ports: 22,80
+  - name: private
+    interface: eth0
+    reserved_ports: 443
+```
+
 ### `nomad_options`
 
 - Driver options
@@ -390,6 +406,11 @@ nomad_host_volumes:
 ### `nomad_podman_enable`
 
 - Installs the podman plugin
+- Default value: **false**
+
+### `nomad_cni_enable`
+
+- Installs the cni plugins
 - Default value: **false**
 
 ### `nomad_docker_enable`
@@ -446,8 +467,28 @@ in many Ansible versions, so this feature might not always work.
 
 ### `nomad_consul_address`
 
-- The address of your consul API, use it in combination with nomad_use_consul=True
+- The address of your consul API, use it in combination with nomad_use_consul=True. If you want to use https, use `nomad_consul_ssl`. Do NOT append https.
 - Default value: **localhost:8500**
+
+### `nomad_consul_ssl`
+
+- If `true` then uses https.
+- Default value: **false**
+
+### `nomad_consul_ca_file`
+
+- Public key of consul CA, use in combination with `nomad_consul_cert_file` and `nomad_consul_key_file`.
+- Default value: ""
+
+### `nomad_consul_cert_file`
+
+- The public key which can be used to access consul.
+- Default value: ""
+
+### `nomad_consul_key_file`
+
+- The private key counterpart of `nomad_consul_cert_file`.
+- Default value: ""
 
 ### `nomad_consul_servers_service_name`
 
@@ -564,20 +605,35 @@ in many Ansible versions, so this feature might not always work.
 - Enable TLS
 - Default value: false
 
+### `nomad_tls_copy_keys`: false
+
+- Whether to copy certs from local machine (controller).
+- Default value: false
+
+### `nomad_tls_files_remote_src`
+
+- Whether to copy certs from remote machine itself.
+- Default value: false
+
+### `nomad_tls_dir`
+
+- The remote dir where the certs are stored.
+- Default value: `/etc/nomad/ssl`
+
 ### `nomad_ca_file`
 
 - Use a ca for tls connection, nomad_cert_file and nomad_key_file are needed
-- Default value: **""**
+- Default value: ca.cert
 
 ### `nomad_cert_file`
 
 - Use a certificate for tls connection, nomad_ca_file and nomad_key_file are needed
-- Default value: **""**
+- Default value: server.crt
 
 ### `nomad_key_file`
 
 - Use a key for tls connection, nomad_cert_file and nomad_key_file are needed
-- Default value: **""**
+- Default value: server.key
 
 ### `nomad_rpc_upgrade_mode`
 

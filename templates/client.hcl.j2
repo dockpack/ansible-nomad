@@ -38,6 +38,17 @@ client {
     }
 {% endfor %}
 
+{% for nomad_host_network in nomad_host_networks %}
+    host_network "{{ nomad_host_network['name'] }}" {
+    {% if 'cidr' in nomad_host_network %}
+        cidr = "{{ nomad_host_network['cidr'] | default}}"
+    {% else %}
+        interface = "{{ nomad_host_network['interface'] }}"
+    {% endif %}
+        reserved_ports = "{{ nomad_host_network['reserved_ports'] }}"
+    }
+{% endfor %}
+
     {% if nomad_chroot_env != False -%}
     chroot_env = {
     {% for key, value in nomad_chroot_env.items() %}

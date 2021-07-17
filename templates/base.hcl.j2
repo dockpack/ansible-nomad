@@ -22,6 +22,10 @@ ports {
 consul {
     # The address to the Consul agent.
     address = "{{ nomad_consul_address }}"
+    ssl = {{ nomad_consul_ssl | bool | lower }}
+    ca_file = "{{ nomad_consul_ca_file }}"
+    cert_file = "{{ nomad_consul_cert_file }}"
+    key_file = "{{ nomad_consul_key_file }}"
     token = "{{ nomad_consul_token }}"
     # The service name to register the server and client with Consul.
     server_service_name = "{{ nomad_consul_servers_service_name }}"
@@ -49,9 +53,9 @@ leave_on_interrupt = {{ nomad_leave_on_interrupt | bool | lower }}
 tls {
     http = true
     rpc = true
-    ca_file = "{{ nomad_ca_file }}"
-    cert_file = "{{ nomad_cert_file }}"
-    key_file = "{{ nomad_key_file }}"
+    ca_file = "{{ nomad_tls_dir }}/{{ nomad_ca_file | basename }}"
+    cert_file = "{{ nomad_tls_dir }}/{{ nomad_cert_file | basename }}"
+    key_file = "{{ nomad_tls_dir }}/{{ nomad_key_file | basename }}"
     rpc_upgrade_mode = {{ nomad_rpc_upgrade_mode | bool | lower }}
     verify_server_hostname = "{{ nomad_verify_server_hostname | bool | lower }}"
     verify_https_client = "{{ nomad_verify_https_client | bool | lower }}"

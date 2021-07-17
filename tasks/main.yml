@@ -52,6 +52,10 @@
   include: install_podman.yml
   when: nomad_podman_enable | bool
 
+- name: Install CNI plugin
+  include: cni.yml
+  when: nomad_cni_enable | bool
+
 - name: Create config directory
   file:
     dest: "{{ nomad_config_dir }}"
@@ -76,6 +80,10 @@
     - _nomad_node_server | bool
     - nomad_encrypt_enable | bool
     - nomad_encrypt is not defined
+
+- name: Create TLS configuration
+  include_tasks: tls.yml
+  when: nomad_tls_enable | bool
 
 - name: Server configuration
   template:

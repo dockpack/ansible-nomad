@@ -1,0 +1,95 @@
+---
+# File: cni_plugin.yml - package installation tasks for Nomad CNI Plugin
+
+- name: Create cni directory
+  file:
+    dest: "{{ nomad_cni_dir }}"
+    state: directory
+    owner: "{{ nomad_user }}"
+    group: "{{ nomad_group }}"
+
+- name: Check CNI package checksum file
+  stat:
+    path: "{{ role_path }}/files/nomad_cni_{{ nomad_cni_version }}_SHA256SUMS"
+  become: false
+  run_once: true
+  tags: installation
+  register: nomad_cni_checksum
+  delegate_to: 127.0.0.1
+
+- name: Get Nomad CNI package checksum file
+  get_url:
+    url: "{{ nomad_cni_checksum_file_url }}"
+    dest: "{{ role_path }}/files/nomad_cni_{{ nomad_cni_version }}_SHA256SUMS"
+  become: false
+  run_once: true
+  tags: installation
+  when: not nomad_cni_checksum.stat.exists
+  delegate_to: 127.0.0.1
+
+- name: Get Nomad CNI package checksum
+  shell: |
+    set -o pipefail
+    grep "{{ nomad_cni_pkg }}" "{{ role_path }}/files/nomad_cni_{{ nomad_cni_version }}_SHA256SUMS"  | awk '{print $1}'
+  args:
+    executable: /bin/bash
+  become: false
+  register: nomad_cni_sha256
+  tags: installation
+  delegate_to: 127.0.0.1
+
+- name: Check Nomad CNI package file
+  stat:
+    path: "{{ role_path }}/files/{{ nomad_cni_pkg }}"
+  become: false
+  register: nomad_cni_package
+  delegate_to: 127.0.0.1
+
+- name: Download Nomad CNI
+  get_url:
+    url: "{{ nomad_cni_zip_url }}"
+    dest: "{{ role_path }}/files/{{ nomad_cni_pkg }}"
+    checksum: "sha256:{{ nomad_cni_sha256.stdout }}"
+    timeout: "42"
+  become: false
+  tags: installation
+  delegate_to: 127.0.0.1
+  when: not nomad_cni_package.stat.exists
+
+- name: Create Temporary Directory for Extraction
+  tempfile:
+    state: directory
+    prefix: ansible-nomad.
+  become: false
+  register: install_temp
+  tags: installation
+  delegate_to: 127.0.0.1
+
+- name: Unarchive Nomad CNI
+  unarchive:
+    src: "{{ role_path }}/files/{{ nomad_cni_pkg }}"
+    dest: "{{ install_temp.path }}/"
+    creates: "{{ install_temp.path }}/bridge"
+  become: false
+  tags: installation
+  delegate_to: 127.0.0.1
+
+- name: Install Nomad CNI
+  copy:
+    src: "{{ item }}"
+    dest: "{{ nomad_cni_dir }}"
+    owner: "{{ nomad_user }}"
+    group: "{{ nomad_group }}"
+    mode: 0755
+  with_fileglob:
+    - "{{ install_temp.path }}/*"
+  tags: installation
+  notify: restart nomad
+
+- name: Cleanup
+  file:
+    path: "{{ install_temp.path }}"
+    state: "absent"
+  become: false
+  tags: installation
+  delegate_to: 127.0.0.1
